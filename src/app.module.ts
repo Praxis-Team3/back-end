@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { UsersController } from './users/users.controller';
+import { ApplicantsModule } from 'applicants/applicants.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [],
-  controllers: [AppController, UsersController],
+  imports: [MongooseModule.forRoot(process.env.MONGODB_URL), ApplicantsModule],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}
