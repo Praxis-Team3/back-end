@@ -3,15 +3,16 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { ApplicantsController } from './applicants.controller';
 import { ApplicantsService } from './applicants.service';
-import { ApplicantsSchema } from 'models/applicants.schema';
+
+import { ApplicantSchema } from '../models/applicant.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'Applicants', schema: ApplicantsSchema },
+      { name: 'Applicants', schema: ApplicantSchema },
     ]),
   ],
   controllers: [ApplicantsController],
   providers: [ApplicantsService],
 })
-export class ApplicantsModule {}
+export class ApplicantsModule { }

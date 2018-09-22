@@ -1,18 +1,19 @@
 import { Schema } from 'mongoose';
 
-export const ApplicantsSchema = new Schema(
+export const ApplicantSchema = new Schema(
   {
-    email: { type: String, required: true },
-    name: { type: String, required: true },
-    id: { type: Number, required: true },
-    phone: { type: String },
     company: { type: String },
-    video: { type: String, required: true },
+    email: { type: String, required: true },
+    id: { type: Number, required: true },
+    name: { type: String, required: true },
+    phone: { type: String },
     status: {
       type: String,
       enum: ['accepted', 'pending', 'rejected'],
       default: 'pending',
     },
+    video: { type: String, required: true },
+    works: { type: Boolean, required: true },
   },
   {
     timestamps: true,

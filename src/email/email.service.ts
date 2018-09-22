@@ -2,7 +2,7 @@ import * as Sengrid from "@sendgrid/mail";
 
 import { Injectable } from '@nestjs/common';
 
-import { EmailDto } from '../models/email.dto';
+import { EmailDto } from '../dto/email.dto';
 
 @Injectable()
 export class EmailService {

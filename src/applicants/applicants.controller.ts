@@ -1,48 +1,50 @@
 import {
-  Controller,
-  Post,
-  ConflictException,
-  UseInterceptors,
-  FileInterceptor,
-  UploadedFile,
   Body,
-  BadRequestException,
+  ConflictException,
+  Controller,
+  Get,
+  Param,
+  Post,
   ValidationPipe,
 } from '@nestjs/common';
+
 import { ApplicantsService } from './applicants.service';
-import { Applicants } from 'models/applicants.interface';
-import { ApplicantCreateDto } from 'models/applicants.dto';
+
+import { ApplicantCreateDto } from '../dto/applicants.dto';
+import { ApplicantInterface } from '../models/applicant.interface';
+import { EmailService } from '../email/email.service';
+import { Errors } from '../errors';
 
 @Controller('applicants')
 export class ApplicantsController {
-  constructor(private readonly applicantsService: ApplicantsService) { }
+  constructor(private readonly applicantsService: ApplicantsService, private readonly emailService: EmailService) { }
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('video', {
-      dest: './uploads',
-      limits: {
-        fieldNameSize: 100,
-        fileSize: 100 * 1024 * 1024,
-      },
-      fileFilter: (req, { mimetype }, callback) => {
-        if (!mimetype.startsWith('video/'))
-          callback(new BadRequestException('', 'invalid_video_format'), false);
-        callback(null, true);
-      },
-    }),
-  )
   async create(
-    @UploadedFile() video,
-    @Body(new ValidationPipe({ transform: true })) applicant: ApplicantCreateDto,
-  ): Promise<Applicants> {
-    const emailRegistered = await this.applicantsService.emailAlreadyRegistered(
-      applicant.email,
+    @Body(new ValidationPipe({ transform: true })) applicant: ApplicantCreateDto
+  ): Promise<ApplicantInterface> {
+    const userIsCurrentlyApplying = await this.applicantsService.isUserApplying(applicant.email);
+
+    if (userIsCurrentlyApplying) throw new ConflictException(
+      'User applying or already accepted',
+      Errors.applicant_already_registered
     );
-    if (emailRegistered) throw new ConflictException('', 'user_already_exists');
 
-    console.log(video);
+    return await this.applicantsService.create(applicant);
+  }
 
-    return this.applicantsService.create(applicant);
+  @Get()
+  async findAll(): Promise<ApplicantInterface[]> {
+    return await this.applicantsService.findAll();
+  }
+
+  @Post(':id/accept')
+  async accept(@Param('id') id: number): Promise<ApplicantInterface> {
+    return await this.applicantsService.accept(id);
+  }
+
+  @Post(':id/deny')
+  async deny(@Param('id') id: number): Promise<ApplicantInterface> {
+    return await this.applicantsService.reject(id);
   }
 }
