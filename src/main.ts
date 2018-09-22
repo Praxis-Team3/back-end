@@ -6,7 +6,7 @@ import * as dotenv from 'dotenv';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  dotenv.config();
+  if (process.env.NODE_ENV !== 'production') dotenv.config();
 
   const app = await NestFactory.create(AppModule);
   app.use(compression());
