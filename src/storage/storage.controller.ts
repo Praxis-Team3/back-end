@@ -1,7 +1,8 @@
 import {
   Controller,
   Post,
-  Body
+  Body,
+  Param
 } from '@nestjs/common';
 
 import { StorageService } from './storage.service';
@@ -18,9 +19,9 @@ export class StorageController {
     return this.storageService.createUploadSignedUrl(contentType, email);
   }
 
-  @Post('videos')
+  @Post(':key')
   async getDownloadSignedUrl(
-    @Body('key') key: string,
+    @Param('key') key: string,
   ): Promise<any> {
     return this.storageService.getDownloadSignedUrl(key);
   }
