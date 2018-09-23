@@ -70,7 +70,12 @@ export class ApplicantsService {
   }
 
   async findAll(): Promise<ApplicantInterface[]> {
-    return this.applicantModel.find({});
+    return await this.applicantModel
+      .find({})
+      .select({
+        __v: 0,
+        password: 0,
+      });
   }
 
   async reject(id: number): Promise<ApplicantInterface> {
