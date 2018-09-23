@@ -9,6 +9,7 @@ import { ApplicantCreateDto } from '../dto/applicants.dto';
 import { EmailService } from '../email/email.service';
 import { Errors } from '../errors';
 import { UsersService } from '../users/users.service';
+import { UserInterface } from 'models/user.interface';
 
 @Injectable()
 export class ApplicantsService {
@@ -19,21 +20,20 @@ export class ApplicantsService {
     private readonly userService: UsersService,
   ) { }
 
-  async accept(id: number): Promise<ApplicantInterface> {
+  async accept(_id: number): Promise<UserInterface> {
     const applicant: ApplicantInterface = await this.applicantModel
-      .findOne({ id, status: 'pending' })
-      .select({ password: 0 });
+      .findOne({ _id, status: 'pending' });
 
     if (!applicant)
       throw new NotFoundException('Applicant not found', Errors.applicant_not_found);
 
     const accepted = await this.applicantModel
-      .update({ id }, { $set: { status: 'accepted' } });
+      .update({ _id }, { $set: { status: 'accepted' } });
 
     if ((!accepted.ok || !accepted.nModified))
       throw new BadRequestException('Error accepting applicant', Errors.applicant_update_error);
 
-    await this.userService.create({
+    const user = await this.userService.create({
       birthdate: applicant.birthdate,
       company: applicant.company,
       email: applicant.email,
@@ -44,7 +44,9 @@ export class ApplicantsService {
       phone: applicant.phone,
     });
 
-    return applicant;
+    delete user.password;
+
+    return user;
   }
 
   async create(applicant: ApplicantCreateDto): Promise<ApplicantInterface> {
