@@ -8,7 +8,11 @@ import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGODB_URL),
+    MongooseModule.forRootAsync({
+      useFactory: () => ({
+        uri: process.env.MONGODB_URL,
+      })
+    }),
     ApplicantsModule,
     EmailModule,
     StatusModule,

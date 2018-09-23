@@ -17,7 +17,10 @@ import { Errors } from '../errors';
 
 @Controller('applicants')
 export class ApplicantsController {
-  constructor(private readonly applicantsService: ApplicantsService, private readonly emailService: EmailService) { }
+  constructor(
+    private readonly applicantsService: ApplicantsService,
+    private readonly emailService: EmailService,
+  ) { }
 
   @Post()
   async create(

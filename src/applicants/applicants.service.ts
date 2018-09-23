@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Model } from 'mongoose';
+import * as Bcrypt from 'bcryptjs';
 
 import { ApplicantInterface } from '../models/applicant.interface';
 import { ApplicantCreateDto } from '../dto/applicants.dto';
@@ -28,7 +29,7 @@ export class ApplicantsService {
     );
 
     this.emailService
-      .sendWellcome(applicant.email, applicant.name)
+      .sendWellcome(applicant.email, `${applicant.names} ${applicant.lastnames}`)
       .then(undefined)
       .catch(undefined);
 
@@ -38,9 +39,14 @@ export class ApplicantsService {
   }
 
   async create(applicant: ApplicantCreateDto): Promise<ApplicantInterface> {
+    applicant.password = await Bcrypt.hash(applicant.password, 10);
     const applicantCreated: ApplicantInterface = await this.applicantModel.create(applicant);
 
-    this.emailService.sendApplicantRegistered(applicantCreated.email, applicantCreated.name)
+    this.emailService
+      .sendApplicantRegistered(
+        applicantCreated.email,
+        `${applicantCreated.names} ${applicantCreated.lastnames}`
+      )
       .then(undefined)
       .catch(undefined);
 
@@ -75,7 +81,7 @@ export class ApplicantsService {
     console.log(rejected, applicant);
 
     this.emailService
-      .sendRejected(applicant.email, applicant.name)
+      .sendRejected(applicant.email, `${applicant.names} ${applicant.lastnames}`)
       .then(undefined)
       .catch(undefined);
 
