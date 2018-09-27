@@ -14,6 +14,7 @@ import { ApplicantsService } from './applicants.service';
 import { ApplicantCreateDto } from '../dto/applicants.dto';
 import { ApplicantInterface } from '../models/applicant.interface';
 import { Errors } from '../errors';
+import { UserInterface } from '../models/user.interface';
 
 @Controller('applicants')
 export class ApplicantsController {
@@ -41,7 +42,7 @@ export class ApplicantsController {
   }
 
   @Patch(':id/accept')
-  async accept(@Param('id') id: number): Promise<ApplicantInterface> {
+  async accept(@Param('id') id: number): Promise<UserInterface> {
     return await this.applicantsService.accept(id);
   }
 
