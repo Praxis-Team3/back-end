@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { SurveysController } from './surveys.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SurveySchema } from 'models/survey.schema';
+
+import { SurveysController } from './surveys.controller';
+import { SurveySchema } from '../models/survey.schema';
 import { SurveysService } from './surveys.service';
 
 @Module({
